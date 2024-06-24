@@ -2,6 +2,15 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    background-color: #868686;
+    border: 1px solid #ccc;
+    border-radius: 0.5em;
     padding: 0 1.245em 1.245em 1.245em;
+}
+
+.messages {
+    text-align: left;
+    overflow-y: auto;
+    height: 20vh;
+    padding: 0.5em;
+    border: 1px solid #ccc;
 }

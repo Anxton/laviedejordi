@@ -1,43 +1,76 @@
+import { useEffect, useState } from "react";
 import "./Chat.css";
 import ChatMessage from "./ChatMessage";
-function Chat() {
-  const messages = [
+function Chat({ username }: { username: string }) {
+  const [messages, setMessages] = useState([
     {
       id: 1,
-      nickname: "Jordi1",
-      message: "1",
+      author: "Jordi1",
+      message: "Hello",
     },
     {
       id: 2,
-      nickname: "Jordi2",
-      message: "2",
+      author: "Jordi2",
+      message:
+        "Les chaussettes de l'archiduchesse sont-elles sèches, archi-sèches ?",
     },
     {
       id: 3,
-      nickname: "Jordi3",
-      message: "3",
+      author: "Jordi3",
+      message: "hydroxypropylméthylcelluloses",
     },
     {
       id: 4,
-      nickname: "Jordi4",
-      message: "4",
+      author: "Jordi4",
+      message:
+        "invraisemblablement, les hydroxypropylméthylcelluloses sont hydrophobes, mais les hydroxyéthylcelluloses sont hydrophiles, c'est incroyable !",
     },
     {
       id: 5,
-      nickname: "Jordi5",
-      message: "5",
+      author: "Jordi5",
+      message: "C'est incroyable !",
     },
-  ];
+  ]);
+
+  useEffect(() => {
+    // scroll to bottom
+    const messagesDiv = document.querySelector(".messages");
+    if (messagesDiv) {
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+  }, [messages]);
+
+  function randomId() {
+    return Math.floor(Math.random() * 1000000);
+  }
+
+  function sendMessage(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const newMessage = {
+      id: randomId(),
+      author: username,
+      message: formData.get("message") as string,
+    };
+    // optimistically add the message
+    setMessages([...messages, newMessage]);
+    // clear the input
+    const input = event.currentTarget.querySelector("input");
+    if (input) {
+      input.value = "";
+    }
+    // send the message to the server using websockets
+  }
 
   return (
     <div className="chat">
       <h2>Chat</h2>
       <div className="messages">
         {messages.map((message) => (
-          <ChatMessage nickname={message.nickname} message={message.message} />
+          <ChatMessage username={message.author} message={message.message} />
         ))}
       </div>
-      <form>
+      <form onSubmit={sendMessage}>
         <input type="text" name="message" />
         <button type="submit">Envoyer</button>
       </form>

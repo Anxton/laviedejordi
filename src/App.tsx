@@ -1,8 +1,8 @@
 import { useState } from "react";
 import "./App.css";
-import Chat from "./chat/Chat";
 import Game from "./Game";
 import NameForm from "./NameForm";
+import Chat from "./chat/Chat";
 import "./index.css";
 
 function App() {
@@ -28,7 +28,7 @@ function App() {
               <button onClick={() => setName("")}>Changer de nom</button>
             </div>
             <Game />
-            <Chat />
+            <Chat username={name} />
           </>
         )}
       </div>

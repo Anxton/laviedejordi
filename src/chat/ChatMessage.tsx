@@ -1,13 +1,13 @@
 function ChatMessage({
-  nickname,
+  username,
   message,
 }: {
-  nickname: string;
+  username: string;
   message: string;
 }) {
   return (
     <div className="message">
-      <strong>{nickname}</strong>: {message}
+      <strong>{username}</strong>: {message}
     </div>
   );
 }
