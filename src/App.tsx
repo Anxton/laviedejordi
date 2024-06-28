@@ -1,39 +1,19 @@
-import { useState } from "react";
-import "./App.css";
-import Game from "./Game";
-import NameForm from "./NameForm";
-import Chat from "./chat/Chat";
+import React, { Suspense, lazy } from "react";
+import { createRoot } from "react-dom/client";
 import "./index.css";
 
-function App() {
-  const [name, setName] = useState("");
+const Root = lazy(() => import("./components/root/Root.tsx"));
+
+export const App = () => {
   return (
-    <>
-      <h1 className="logo">LA VIE DE JORDI</h1>
-
-      <div className="content">
-        {!name ? (
-          // no name
-          <NameForm
-            handleSubmit={(e) => {
-              const formData = new FormData(e.currentTarget);
-              setName(formData.get("name") as string);
-            }}
-          />
-        ) : (
-          // name is set
-          <>
-            <div>
-              <h2>Bonjour {name} !</h2>
-              <button onClick={() => setName("")}>Changer de nom</button>
-            </div>
-            <Game />
-            <Chat username={name} />
-          </>
-        )}
-      </div>
-    </>
+    <Suspense fallback={<div>Loading...</div>}>
+      <Root />
+    </Suspense>
   );
-}
+};
 
-export default App;
+createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
