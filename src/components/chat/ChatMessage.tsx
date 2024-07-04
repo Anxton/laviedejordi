@@ -6,9 +6,9 @@ function ChatMessage({
   message: string;
 }) {
   return (
-    <div className="message">
+    <span className="message">
       <strong>{username}</strong>: {message}
-    </div>
+    </span>
   );
 }
 

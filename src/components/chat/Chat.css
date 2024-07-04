@@ -1,17 +1,28 @@
 .chat {
+  width: 65%;
+  height: 40%;
   display: flex;
   flex-direction: column;
-  width: 60%;
   border: 1px solid #ccc;
   border-radius: 8px;
   overflow: hidden;
 }
 
 .messages {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
   text-align: left;
   overflow-y: auto;
-  height: 20vh;
   padding: 0.5em;
+  box-sizing: border-box;
+}
+
+.message {
+  /* overflow */
+  overflow-wrap: break-word;
+  word-break: break-all;
 }
 
 .send {
@@ -23,6 +34,8 @@
 .send input {
   width: 100%;
   border: 0;
+  border-radius: 0;
+  border-bottom-left-radius: 8px;
   padding: 0.5em;
 }
 
