@@ -1,13 +1,20 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useState } from "react";
 import { createRoot } from "react-dom/client";
-import "./index.css";
+import "./App.css";
+import Loading from "./components/loading/Loading.tsx";
+import { UserContext } from "./context/UserContext.tsx";
 
 const Root = lazy(() => import("./components/root/Root.tsx"));
 
 export const App = () => {
+  const [name, setName] = useState("");
+  const nameState = { name, setName };
+
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <Root />
+    <Suspense fallback={<Loading />}>
+      <UserContext.Provider value={nameState}>
+        <Root />
+      </UserContext.Provider>
     </Suspense>
   );
 };

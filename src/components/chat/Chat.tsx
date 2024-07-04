@@ -1,3 +1,5 @@
+import { faPaperPlane } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import "./Chat.css";
 import ChatMessage from "./ChatMessage";
@@ -64,15 +66,20 @@ function Chat({ username }: { username: string }) {
 
   return (
     <div className="chat">
-      <h2>Chat</h2>
       <div className="messages">
-        {messages.map((message) => (
-          <ChatMessage username={message.author} message={message.message} />
+        {messages.map((message, index) => (
+          <ChatMessage
+            key={index}
+            username={message.author}
+            message={message.message}
+          />
         ))}
       </div>
-      <form onSubmit={sendMessage}>
+      <form onSubmit={sendMessage} className="send">
         <input type="text" name="message" />
-        <button type="submit">Envoyer</button>
+        <button>
+          <FontAwesomeIcon icon={faPaperPlane} />
+        </button>
       </form>
     </div>
   );

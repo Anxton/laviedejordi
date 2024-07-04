@@ -1,25 +1,11 @@
 #root {
   height: 100vh;
-  max-width: 1280px;
-  margin: 0 auto;
+  width: 100vw;
+  margin: 0 0;
   text-align: center;
 
   display: flex;
   flex-direction: column;
-}
-
-.logo {
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #565effaa);
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-
-  gap: 1em;
 }

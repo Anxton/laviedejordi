@@ -1,17 +1,13 @@
-import "../../App.css";
 import "./NameForm.css";
 
-function NameForm({
-  handleSubmit,
-}: {
-  handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
-}) {
+function NameForm({ setName }: { setName: (name: string) => void }) {
   return (
     <>
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          handleSubmit(e);
+          const formData = new FormData(e.currentTarget);
+          setName(formData.get("name") as string);
         }}
       >
         <h2>
