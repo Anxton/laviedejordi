@@ -35,11 +35,13 @@ const createServerMessage = (message: string): Message => {
 };
 
 const createJoinMessage = (username: string): Message => {
-    return createServerMessage(`${username} has joined the chat`);
+    // return createServerMessage(`${username} has joined the chat`);
+    return createServerMessage(`${username} a rejoint le chat 😻`);
 };
 
 const createLeaveMessage = (username: string): Message => {
-    return createServerMessage(`${username} has left the chat`);
+    // return createServerMessage(`${username} has left the chat`);
+    return createServerMessage(`${username} est parti du chat 😿`);
 }
 
 const MAX_MESSAGE_LENGTH = 100; // Define the maximum message length
@@ -65,6 +67,11 @@ const broadcast = (ev: string, message: Message) => {
     addToMessageHistory(message);
 }
 
+const log = (message: string) => {
+    const timestamp = new Date().toUTCString();
+    console.info(`[${timestamp}] ${message}`);
+}
+
 const listenForJoin = (user: User) => {
     user.socket.on("join", (username) => {
         // If the user has already joined, ignore the message
@@ -84,7 +91,7 @@ const listenForJoin = (user: User) => {
         addMessageListener(user);
         addDisconnectListener(user);
         broadcast("message", createJoinMessage(username));
-        console.log("Join: " + username);
+        log("Join: " + username);
     })
 }
 
@@ -96,7 +103,7 @@ const addMessageListener = (user: User) => {
         }
         // Broadcast the message to all users
         broadcast("message", message);
-        console.log(`Message: ${user.username} | ${message.message}`);
+        log(`Message: ${user.username} | ${message.message}`);
     });
 }
 
@@ -109,7 +116,7 @@ const addDisconnectListener = (user: User) => {
         }
         // Broadcast the disconnection message
         broadcast("message", createLeaveMessage(user.username));
-        console.log(`Disconnection: ${user.username} | ${users.length} users connected`);
+        log(`Disconnection: ${user.username} | ${users.length} users connected`);
     });
 }
 
@@ -120,11 +127,11 @@ io.on("connection", (socket) => {
     // Ask the user to join
     socket.emit("join");
 
-    console.log(`Connecting.`);
+    log(`Connecting.`);
 });
 
-console.log("Starting the server");
+log("Starting the server");
 
 httpsServer.listen(3000, '0.0.0.0', () => {
-    console.log("Server is listening on port 3000");
+    log("Server is listening on port 3000");
 });
