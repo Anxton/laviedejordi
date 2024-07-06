@@ -1,0 +1,56 @@
+.img-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+.img-github {
+    display: none;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 4vw;
+    width: 4vw;
+}
+
+.img-jordette {
+    position: absolute;
+    display: block;
+    rotate: 30deg;
+    width: 30vw;
+    left: -15vw;
+}
+
+.img-jordi {
+    position: absolute;
+    display: block;
+    rotate: -30deg;
+    width: 30vw;
+    right: -15vw;
+
+    translate: 0 -10%;
+}
+
+.img-bottom {
+    top: 40%;
+}
+
+.img-top {
+    top: 15%;
+}
+
+@media (min-width: 768px) {
+    .img-jordette {
+        width: 20vw;
+        left: -10vw;
+    }
+
+    .img-jordi {
+        width: 20vw;
+        right: -10vw;
+    }
+
+    .img-github {
+        display: block;
+    }
+}

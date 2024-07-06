@@ -1,5 +1,6 @@
 import Content from "../content/Content";
 import Header from "./Header";
+import Images from "./Images";
 import "./Root.css";
 
 function Root() {
@@ -7,6 +8,7 @@ function Root() {
     <>
       <Header />
       <Content />
+      <Images />
     </>
   );
 }
