@@ -19,7 +19,7 @@
   z-index: -1;
 }
 
-.img-dijor {
+.img-jordette {
   position: absolute;
   display: block;
   rotate: 30deg;
@@ -46,7 +46,7 @@
 }
 
 @media (min-width: 768px) {
-  .img-dijor {
+  .img-jordette {
     width: 20vw;
     left: -5vw;
   }
