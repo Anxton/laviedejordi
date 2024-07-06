@@ -1,13 +1,11 @@
-function ChatMessage({
-  username,
-  message,
-}: {
-  username: string;
-  message: string;
-}) {
-  return (
+import { Message } from "./Chat";
+
+function ChatMessage({ messageData }: { messageData: Message }) {
+  return messageData.server ? (
+    <span className="message server-message">{messageData.message}</span>
+  ) : (
     <span className="message">
-      <strong>{username}</strong>: {message}
+      <strong>{messageData.author}</strong>: {messageData.message}
     </span>
   );
 }

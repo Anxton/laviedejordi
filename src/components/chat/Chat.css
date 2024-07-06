@@ -8,21 +8,29 @@
   overflow: hidden;
 }
 
-.messages {
+.message-container {
   height: 100%;
   width: 100%;
+  padding: 0.5em;
   display: flex;
   flex-direction: column;
   text-align: left;
   overflow-y: auto;
-  padding: 0.5em;
   box-sizing: border-box;
+
+  /* scroll bar */
+  scrollbar-width: thin;
+  scrollbar-color: #ccc #f0f0f0;
 }
 
 .message {
   /* overflow */
   overflow-wrap: break-word;
   word-break: break-word;
+}
+
+.server-message {
+  font-style: italic;;
 }
 
 .send {

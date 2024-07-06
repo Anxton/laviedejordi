@@ -1,8 +1,7 @@
 function Game() {
   return (
     <div>
-      <h2>Game</h2>
-      <p>Game content</p>
+      <h2>Pouvez-vous trouver le mot secret ?</h2>
       <form onSubmit={guessHandler}>
         <input type="text" id="guess" name="guess" />
         <br /> <br />
@@ -11,11 +10,22 @@ function Game() {
     </div>
   );
 }
-
+const answer = "42";
 function guessHandler(event: React.FormEvent<HTMLFormElement>) {
   event.preventDefault();
   const formData = new FormData(event.currentTarget);
-  console.log(formData.get("guess"));
+  if (formData.get("guess") === null) {
+    return;
+  }
+  const guess = formData.get("guess") as string;
+  console.log(guess);
+  // send the guess to the server
+  // client.emit("guess", guess);
+  if (guess === answer) {
+    alert("You win!");
+  } else {
+    alert("Try again!");
+  }
 }
 
 export default Game;
