@@ -1,9 +1,16 @@
 function Game() {
   return (
     <div>
-      <h2>Pouvez-vous trouver le mot secret ?</h2>
+      <h2>Entre ton mot ici !</h2>
       <form onSubmit={guessHandler}>
-        <input type="text" id="guess" name="guess" />
+        <input
+          type="text"
+          id="guess"
+          name="guess"
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck={false}
+        />
         <br /> <br />
         <button type="submit">Envoyer</button>
       </form>

@@ -20,7 +20,15 @@ function NameForm({ setName }: { setName: (name: string) => void }) {
         <h2>
           <label htmlFor="name">Quel est ton nom ?</label>
         </h2>
-        <input type="text" id="name" name="name" onChange={nameChangeHandler} />
+        <input
+          type="text"
+          id="name"
+          name="name"
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck={false}
+          onChange={nameChangeHandler}
+        />
         <br /> <br />
         <button type="submit">Envoyer</button>
       </form>

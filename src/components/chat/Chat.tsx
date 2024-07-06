@@ -102,7 +102,15 @@ function Chat({ username }: { username: string }) {
         ))}
       </div>
       <form onSubmit={sendMessage} className="send">
-        <input type="text" name="message" onChange={handleInput} />
+        <input
+          type="text"
+          name="message"
+          placeholder="Tapez un message..."
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck={false}
+          onChange={handleInput}
+        />
         <button>
           <FontAwesomeIcon icon={faPaperPlane} />
         </button>
