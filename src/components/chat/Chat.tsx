@@ -1,7 +1,8 @@
 import { faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from "react";
-import { io, Socket } from "socket.io-client";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { Socket } from "socket.io-client";
+import { UserContext } from "../../context/UserContext";
 import "./Chat.css";
 import ChatMessage from "./ChatMessage";
 
@@ -9,62 +10,79 @@ export type Message = {
   author: string;
   message: string;
   server?: boolean;
+  join?: string;
+  leave?: string;
+  win?: string;
 };
 
-function Chat({ username }: { username: string }) {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      author: "Test",
-      message: "Hello",
-    },
-  ]);
+function Chat({ client }: { client: Socket | null }) {
+  const { username } = useContext(UserContext);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputValue, setInputValue] = useState("");
 
-  const [client, setClient] = useState<Socket | null>(null);
+  const showServerOffline = () => {
+    setMessages(() => [
+      {
+        author: "Client",
+        message: "Le serveur est actuellement hors ligne... 🛌",
+        server: true,
+      },
+    ]);
+  };
 
+  // setup the client
   useEffect(() => {
-    console.log("Connecting to the server");
-
-    // connect to the server using socket.io
-    setClient(() => io("https://laviedejordi.me:3000"));
-    // the effect should only run once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (client === null) {
+    if (!client) {
       console.log("Client is null");
       return;
     }
     console.log("Client is not null");
 
-    // listen for the join event from the server
-    client.on("join", () => {
-      console.log("Sending a join message to the server");
+    const joinChat = () => {
+      console.log("Join chat");
       client.emit("join", username);
+    };
+
+    // listen for the history from the server
+    client.on("history", (history: Message[]) => {
+      console.log("Received the history from the server");
+      setMessages(history);
     });
 
     // listen for messages from the server
-    client.on("message", (message) => {
+    client.on("message", (message: Message) => {
       console.log("Received a message from the server");
       console.log(message);
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
-    // listen for the history from the server
-    client.on("history", (history) => {
-      console.log("Received the history from the server");
-      console.log(history);
-      setMessages(history);
-    });
+    const reconnectListener = () => {
+      joinChat();
+    };
+    // handle reconnection
+    client.on("connect", reconnectListener);
+
+    const disconnectListener = () => {
+      showServerOffline();
+    };
+    // handle disconnection
+    client.on("disconnect", disconnectListener);
+
+    // join the chat
+    joinChat();
+
     // cleanup function
     return () => {
-      client.disconnect();
+      client.off("message");
+      client.off("history");
+      client.off("connect", reconnectListener);
+      client.off("disconnect", disconnectListener);
       console.log("Disconnected from the server");
     };
-  }, [username, client]);
+  }, [client, username]);
 
+  // scroll to bottom when messages change
   useEffect(() => {
-    // scroll to bottom
     const messagesDiv = document.querySelector(".message-container");
     messagesDiv!.scrollTo({
       top: messagesDiv!.scrollHeight,
@@ -72,57 +90,51 @@ function Chat({ username }: { username: string }) {
     });
   }, [messages]);
 
-  function sendMessage(event: React.FormEvent<HTMLFormElement>) {
-    if (client === null) {
+  const chatSubmitHandler = () => {
+    if (!client || client.disconnected || !inputValue.trim()) {
       return;
     }
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const text = formData.get("message") as string;
-    if (text.trim() === "") {
-      return;
-    }
-    const newMessage = {
-      author: username,
-      message: text,
-    };
-    // clear the input
-    const input = event.currentTarget.querySelector("input");
-    input!.value = "";
     // send the message to the server using socket.io
-    client.emit("message", newMessage);
-  }
+    client.emit("message", {
+      author: username,
+      message: inputValue.trim(),
+    });
+    // clear the input
+    setInputValue("");
+  };
+
+  const chatHandleInput = (event: ChangeEvent<HTMLInputElement>) => {
+    const newText = event.target.value;
+    // limit to 100 characters
+    if (newText.length > 100) {
+      return;
+    }
+    setInputValue(newText);
+  };
 
   return (
     <div className="chat">
       <div className="message-container">
-        {client === null && <span>Connecting to the server...</span>}
         {messages.map((message, index) => (
           <ChatMessage key={index} messageData={message} />
         ))}
       </div>
-      <form onSubmit={sendMessage} className="send">
+      <form onSubmit={(e) => e.preventDefault()} className="send">
         <input
-          type="text"
-          name="message"
           placeholder="Tapez un message..."
           autoComplete="off"
           autoCorrect="off"
           spellCheck={false}
-          onChange={handleInput}
+          type="text"
+          value={inputValue}
+          onChange={chatHandleInput}
         />
-        <button>
+        <button onClick={chatSubmitHandler}>
           <FontAwesomeIcon icon={faPaperPlane} />
         </button>
       </form>
     </div>
   );
 }
-
-const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-  if (event.target.value.length > 100) {
-    event.target.value = event.target.value.slice(0, 100);
-  }
-};
 
 export default Chat;

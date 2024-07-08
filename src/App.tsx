@@ -7,12 +7,15 @@ import { UserContext } from "./context/UserContext.tsx";
 const Root = lazy(() => import("./components/root/Root.tsx"));
 
 export const App = () => {
-  const [name, setName] = useState("");
-  const nameState = { name, setName };
+  const [username, setUsername] = useState("");
+  const userState = {
+    username,
+    setUsername,
+  };
 
   return (
     <Suspense fallback={<Loading />}>
-      <UserContext.Provider value={nameState}>
+      <UserContext.Provider value={userState}>
         <Root />
       </UserContext.Provider>
     </Suspense>

@@ -1,0 +1,25 @@
+.message {
+    padding: 0 0.5em;
+    /* overflow */
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.server-message {
+    font-style: italic;
+}
+
+.join-message {
+    /* color: #3975ce; */
+    color: #56ce27;
+}
+
+.leave-message {
+    color: #ce4f0a;
+}
+
+.win-message {
+    color: #56ce27;
+    background-color: #e7ffdf;
+    font-weight: bold;
+}

@@ -1,11 +1,15 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import "dotenv/config";
 import { readFileSync } from "fs";
 import { createServer } from "https";
 import { Server, Socket } from "socket.io";
 
+const MAX_MESSAGE_LENGTH = 100; // Define the maximum message length
+const MAX_HISTORY_LENGTH = 100; // Define the maximum history length
+const gameAnswer = process.env.REACT_APP_ANSWER || "wawa";
+
 const options = {
-    key: readFileSync('/etc/letsencrypt/live/alcoolis.me-0002/privkey.pem'),
-    cert: readFileSync('/etc/letsencrypt/live/alcoolis.me-0002/fullchain.pem')
+    key: readFileSync(process.env.KEY_PATH || ""),
+    cert: readFileSync(process.env.CERT_PATH || ""),
 };
 const httpsServer = createServer(options);
 const io = new Server(httpsServer, {
@@ -18,11 +22,15 @@ type Message = {
     author: string;
     message: string;
     server?: boolean;
+    join?: string;
+    leave?: string;
+    win?: string;
 }
 
 type User = {
     username: string;
     hasJoined: boolean;
+    hasWon: boolean;
     socket: Socket;
 }
 
@@ -34,18 +42,32 @@ const createServerMessage = (message: string): Message => {
     }
 };
 
+const createWinMessage = (username: string): Message => {
+    return {
+        "author": "Server",
+        "message": " a trouvé le mot !",
+        "server": true,
+        "win": username,
+    }
+}
+
 const createJoinMessage = (username: string): Message => {
-    // return createServerMessage(`${username} has joined the chat`);
-    return createServerMessage(`${username} a rejoint le chat 😻`);
+    return {
+        "author": "Server",
+        "message": " a rejoint le chat",
+        "server": true,
+        "join": username,
+    }
 };
 
 const createLeaveMessage = (username: string): Message => {
-    // return createServerMessage(`${username} has left the chat`);
-    return createServerMessage(`${username} est parti du chat 😿`);
+    return {
+        "author": "Server",
+        "message": " a quitté le chat",
+        "server": true,
+        "leave": username,
+    }
 }
-
-const MAX_MESSAGE_LENGTH = 100; // Define the maximum message length
-const MAX_HISTORY_LENGTH = 100; // Define the maximum history length
 
 const isUserMessageInvalid = (message: Message): boolean => {
     return message.message.trim() === "" || message.author.trim() === "" || message.message.length > MAX_MESSAGE_LENGTH || message.server === true;
@@ -72,33 +94,28 @@ const log = (message: string) => {
     console.info(`[${timestamp}] ${message}`);
 }
 
-const listenForJoin = (user: User) => {
-    user.socket.on("join", (username) => {
-        // If the user has already joined, ignore the message
-        if (user.hasJoined) {
-            return;
-        }
-        // If the username is invalid, ignore the message
-        if (username.trim() === "") {
-            return;
-        }
-        // Set the username and add the user to the list
-        user.username = username;
-        user.hasJoined = true;
-        users.push(user);
-        // Send the history to the user
-        user.socket.emit("history", messageHistory);
-        addMessageListener(user);
-        addDisconnectListener(user);
-        broadcast("message", createJoinMessage(username));
-        log("Join: " + username);
-    })
-}
-
 const addMessageListener = (user: User) => {
-    user.socket.on("message", (message) => {
+    user.socket.on("message", (message: Message) => {
         // verify message
         if (isUserMessageInvalid(message)) {
+            return;
+        }
+        if (message.message.toLowerCase().trim() === gameAnswer && !user.hasWon) {
+            user.hasWon = true;
+            user.socket.emit("guess", "correct");
+            broadcast("message", createWinMessage(user.username));
+            return;
+        }
+        if (message.message === "/clear") {
+            messageHistory.length = 0;
+            io.emit("history", messageHistory);
+            log(`Clear: ${user.username}`);
+            return;
+        }
+        if (message.message === "/who") {
+            const usernames = users.map(user => user.username);
+            user.socket.emit("message", createServerMessage(`Utilisateurs connectés: ${usernames.join(", ")}`));
+            log(`Users: ${user.username}`);
             return;
         }
         // Broadcast the message to all users
@@ -120,13 +137,49 @@ const addDisconnectListener = (user: User) => {
     });
 }
 
-// Listen for incoming connections
-io.on("connection", (socket) => {
-    const user = { username: "", socket, hasJoined: false };
-    listenForJoin(user);
-    // Ask the user to join
-    socket.emit("join");
+const addGuessListener = (user: User) => {
+    user.socket.on("guess", (guess: string) => {
+        if (!user.hasWon && guess === gameAnswer) {
+            user.hasWon = true;
+            user.socket.emit("guess", "correct");
+            broadcast("message", createWinMessage(user.username));
+        } else {
+            user.socket.emit("guess", "incorrect");
+        }
+        log(`Guess: ${user.username} | ${guess}`);
+    });
+}
 
+const listenForJoin = (user: User) => {
+    user.socket.on("join", (username: string) => {
+        // If user has already joined, ignore
+        if (user.hasJoined) {
+            return;
+        }
+        // If username is invalid, ignore
+        if (username.trim() === "") {
+            return;
+        }
+        // Set username and add user to connected users
+        user.username = username;
+        user.hasJoined = true;
+        users.push(user);
+        // Add event listeners for user
+        addMessageListener(user);
+        addGuessListener(user);
+        addDisconnectListener(user);
+        // Send message history to user
+        user.socket.emit("history", messageHistory);
+        // Broadcast join message
+        broadcast("message", createJoinMessage(username));
+        log("Join: " + username);
+    })
+}
+
+// Listen for incoming connections
+io.on("connection", (socket: Socket) => {
+    const user = { username: "", hasJoined: false, hasWon: false, socket };
+    listenForJoin(user);
     log(`Connecting.`);
 });
 
