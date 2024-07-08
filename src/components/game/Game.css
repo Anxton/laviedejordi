@@ -8,7 +8,8 @@ input.correct {
     color: #56ce27;
 }
 
-input.wrong {    
+/* CREDITS: @g-liu https://codepen.io/g-liu/pen/OVLWxX */
+input.wrong {
     /* 2 animations: shake, and glow red */
     animation-name: shake, glow-red;
     animation-duration: 0.7s, 0.35s;
