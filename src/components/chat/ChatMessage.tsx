@@ -31,7 +31,7 @@ const ChatMessage = ({ messageData }: { messageData: Message }) => {
   } else {
     return (
       <span className={classes}>
-        {!messageData.server && <b>{messageData.author}: </b>}
+        {!messageData.server && <b>{messageData.author} : </b>}
         {messageData.message}
       </span>
     );

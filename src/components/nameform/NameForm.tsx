@@ -15,7 +15,7 @@ export const NameForm = () => {
     if (name.trim() === "") {
       return;
     }
-    setUsername(name);
+    setUsername(name.trim());
   };
 
   const nameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
