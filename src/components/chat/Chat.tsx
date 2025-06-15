@@ -15,19 +15,19 @@ export type Message = {
   win?: string;
 };
 
+const disconnectedMessage: Message = {
+  author: "Client",
+  message: "Le serveur est actuellement hors ligne... 🛌",
+  server: true,
+};
+
 function Chat({ client }: { client: Socket | null }) {
   const { username } = useContext(UserContext);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
 
   const showServerOffline = () => {
-    setMessages(() => [
-      {
-        author: "Client",
-        message: "Le serveur est actuellement hors ligne... 🛌",
-        server: true,
-      },
-    ]);
+    setMessages(() => [disconnectedMessage]);
   };
 
   // setup the client
@@ -36,10 +36,14 @@ function Chat({ client }: { client: Socket | null }) {
       console.log("Client is null");
       return;
     }
-    console.log("Client is not null");
+    if (client.disconnected) {
+      console.log("Client is disconnected, showing offline message");
+      showServerOffline();
+      return;
+    }
 
     const joinChat = () => {
-      console.log("Join chat");
+      console.log("Joining chat");
       client.emit("join", username);
     };
 
@@ -56,27 +60,18 @@ function Chat({ client }: { client: Socket | null }) {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
-    const reconnectListener = () => {
-      joinChat();
-    };
     // handle reconnection
-    client.on("connect", reconnectListener);
+    client.on("connect", () => joinChat());
 
-    const disconnectListener = () => {
-      showServerOffline();
-    };
     // handle disconnection
-    client.on("disconnect", disconnectListener);
+    client.on("disconnect", () => showServerOffline());
 
     // join the chat
     joinChat();
 
     // cleanup function
     return () => {
-      client.off("message");
-      client.off("history");
-      client.off("connect", reconnectListener);
-      client.off("disconnect", disconnectListener);
+      client.offAny();
       console.log("Disconnected from the server");
     };
   }, [client, username]);
