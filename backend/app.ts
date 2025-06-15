@@ -14,7 +14,7 @@ const options = {
 const httpsServer = createServer(options);
 const io = new Server(httpsServer, {
     cors: {
-        origin: "https://laviedejordi.me",
+        origin: "https://laviedejordi.alcoolis.me",
     }
 });
 

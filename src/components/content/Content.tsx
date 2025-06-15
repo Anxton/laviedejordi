@@ -14,7 +14,7 @@ const Content = () => {
   // Connect to the server
   useEffect(() => {
     console.log("Connecting to the server");
-    const socket = io("https://laviedejordi.me:3000");
+    const socket = io("https://laviedejordi.alcoolis.me:3000");
     client.current = socket;
 
     client.current.on("connect", () => {
