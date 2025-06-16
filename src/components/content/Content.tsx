@@ -14,7 +14,17 @@ const Content = () => {
   // Connect to the server
   useEffect(() => {
     console.log("Connecting to the server");
-    const socket = io("https://laviedejordi.alcoolis.me:3000");
+    console.log(`VITE_URL: ${import.meta.env.VITE_URL as string}`);
+    console.log(`VITE_BACKEND_PORT: ${import.meta.env.VITE_BACKEND_PORT}`);
+    if (!import.meta.env.VITE_URL || !import.meta.env.VITE_BACKEND_PORT) {
+      console.error(
+        "Environment variables VITE_URL or VITE_BACKEND_PORT are not set."
+      );
+      return;
+    }
+    const socket = io(
+      `${import.meta.env.VITE_URL}:${import.meta.env.VITE_BACKEND_PORT}`
+    );
     client.current = socket;
 
     client.current.on("connect", () => {

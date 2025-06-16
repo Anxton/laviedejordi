@@ -1,30 +1,71 @@
-# React + TypeScript + Vite
+# 🧩 La Vie de Jordi
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository contains the frontend and backend server for **La Vie de Jordi**, containerized using Docker and easily deployable with a script.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Quick Start
 
-## Expanding the ESLint configuration
+### 1. Clone the Repository
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+```bash
+git clone https://github.com/your-username/laviedejordi.git
+cd laviedejordi
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Create your `.env` file
+
+```bash
+cp .env.example .env
+```
+
+Edit the `.env` file to configure your environment variables.
+
+### 4. Make the deploy script executable
+
+```bash
+chmod +x deploy.sh
+```
+
+### 5. Deploy the Application
+
+```bash
+./deploy.sh
+```
+
+This will:
+
+- Build your frontend (in `dist/`)
+- Build the Docker image
+- Launch the container with `docker compose up -d --build`
+
+## ✅ Verifying Deployment
+
+Check that the backend server is running by viewing logs:
+
+```bash
+docker compose logs -f backend
+```
+
+## 🛠️ Development
+
+### Running the Application Locally
+
+To run the application locally without Docker, you can use the following commands:
+
+```bash
+npm run dev
+```
+
+This will start both the frontend and backend servers in development mode.
+You can access the frontend at `http://localhost:5173` and the backend at `http://localhost:3000`.
+
+## 📄 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

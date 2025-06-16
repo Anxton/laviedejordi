@@ -1,0 +1,18 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laviedejordi-container
+    ports:
+      - "${VITE_BACKEND_PORT}:${VITE_BACKEND_PORT}"
+    volumes:
+      - "${SSL_LIVE_DIR}:${SSL_LIVE_DIR}:ro"
+      - "${SSL_ARCHIVE_DIR}:${SSL_ARCHIVE_DIR}:ro"
+    environment:
+      - IN_DOCKER=true
+      - VITE_URL=${VITE_URL}
+      - VITE_BACKEND_PORT=${VITE_BACKEND_PORT}
+      - SSL_CERT_PATH=${SSL_CERT_PATH}
+      - SSL_KEY_PATH=${SSL_KEY_PATH}
+    restart: unless-stopped

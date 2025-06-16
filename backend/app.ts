@@ -1,20 +1,37 @@
-import "dotenv/config";
 import { readFileSync } from "fs";
 import { createServer } from "https";
 import { Server, Socket } from "socket.io";
 
+// Only load .env when not running inside Docker
+if (!process.env.IN_DOCKER) {
+    import('dotenv').then(dotenv => {
+        dotenv.config({ path: ".env.development" });
+        console.log('✅ Loaded local environment from dotenv');
+    });
+} else {
+    console.log('🚀 Running in Docker — skipping dotenv');
+}
+
 const MAX_MESSAGE_LENGTH = 100; // Define the maximum message length
 const MAX_HISTORY_LENGTH = 100; // Define the maximum history length
-const gameAnswer = process.env.REACT_APP_ANSWER || "wawa";
+const gameAnswer = process.env.VITE_ANSWER || "wawa";
 
-const options = {
-    key: readFileSync(process.env.KEY_PATH || ""),
-    cert: readFileSync(process.env.CERT_PATH || ""),
-};
-const httpsServer = createServer(options);
-const io = new Server(httpsServer, {
+let options = {};
+
+if (process.env.SSL_KEY_PATH && process.env.SSL_CERT_PATH) {
+    options = {
+        key: readFileSync(process.env.SSL_KEY_PATH),
+        cert: readFileSync(process.env.SSL_CERT_PATH),
+    };
+    console.log('✅ SSL enabled');
+} else {
+    console.log('❌ SSL not enabled');
+}
+const server = createServer(options);
+
+const io = new Server(server, {
     cors: {
-        origin: "https://laviedejordi.alcoolis.me",
+        origin: process.env.VITE_URL,
     }
 });
 
@@ -178,13 +195,13 @@ const listenForJoin = (user: User) => {
 
 // Listen for incoming connections
 io.on("connection", (socket: Socket) => {
-    const user = { username: "", hasJoined: false, hasWon: false, socket };
+    const user: User = { username: "", hasJoined: false, hasWon: false, socket };
     listenForJoin(user);
     log(`Connecting.`);
 });
 
 log("Starting the server");
 
-httpsServer.listen(3000, '0.0.0.0', () => {
-    log("Server is listening on port 3000");
+server.listen(parseInt(process.env.VITE_BACKEND_PORT || "3000"), '0.0.0.0', () => {
+    log(`Server is listening on port ${process.env.VITE_BACKEND_PORT}`);
 });

@@ -8,10 +8,7 @@ const Game = ({ client }: { client: Socket | null }) => {
   const guessInputRef = useRef<HTMLInputElement>(null);
   const guessButtonRef = useRef<HTMLButtonElement>(null);
 
-  const answer =
-    process.env.REACT_APP_ANSWER === undefined
-      ? "wawa"
-      : (process.env.REACT_APP_ANSWER as string);
+  const answer = import.meta.env.VITE_ANSWER || "wawa";
 
   // listen for guess event (in case answer is correct through chat and server sends the event)
   useEffect(() => {
