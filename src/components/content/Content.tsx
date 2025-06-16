@@ -6,6 +6,9 @@ import Game from "../game/Game";
 import NameForm from "../nameform/NameForm";
 import "./Content.css";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+const backendPort = import.meta.env.VITE_BACKEND_PORT;
+
 const Content = () => {
   const { username } = useContext(UserContext);
 
@@ -14,17 +17,15 @@ const Content = () => {
   // Connect to the server
   useEffect(() => {
     console.log("Connecting to the server");
-    console.log(`VITE_URL: ${import.meta.env.VITE_URL as string}`);
-    console.log(`VITE_BACKEND_PORT: ${import.meta.env.VITE_BACKEND_PORT}`);
-    if (!import.meta.env.VITE_URL || !import.meta.env.VITE_BACKEND_PORT) {
+    console.log(`VITE_BACKEND_URL: ${backendUrl}`);
+    console.log(`VITE_BACKEND_PORT: ${backendPort}`);
+    if (!backendUrl || !backendPort) {
       console.error(
-        "Environment variables VITE_URL or VITE_BACKEND_PORT are not set."
+        "Environment variables VITE_BACKEND_URL or VITE_BACKEND_PORT are not set."
       );
       return;
     }
-    const socket = io(
-      `${import.meta.env.VITE_URL}:${import.meta.env.VITE_BACKEND_PORT}`
-    );
+    const socket = io(`${backendUrl}:${backendPort}`);
     client.current = socket;
 
     client.current.on("connect", () => {

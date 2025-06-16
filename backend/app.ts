@@ -1,13 +1,13 @@
+import dotenv from "dotenv";
 import { readFileSync } from "fs";
-import { createServer } from "https";
+import { createServer as createHttpServer } from "http";
+import { createServer as createHttpsServer } from "https";
 import { Server, Socket } from "socket.io";
 
 // Only load .env when not running inside Docker
 if (!process.env.IN_DOCKER) {
-    import('dotenv').then(dotenv => {
-        dotenv.config({ path: ".env.development" });
-        console.log('✅ Loaded local environment from dotenv');
-    });
+    dotenv.config({ path: ".env.development" });
+    console.log('✅ Loaded local environment from dotenv');
 } else {
     console.log('🚀 Running in Docker — skipping dotenv');
 }
@@ -16,23 +16,30 @@ const MAX_MESSAGE_LENGTH = 100; // Define the maximum message length
 const MAX_HISTORY_LENGTH = 100; // Define the maximum history length
 const gameAnswer = process.env.VITE_ANSWER || "wawa";
 
-let options = {};
+let server;
 
 if (process.env.SSL_KEY_PATH && process.env.SSL_CERT_PATH) {
-    options = {
+    const options = {
         key: readFileSync(process.env.SSL_KEY_PATH),
         cert: readFileSync(process.env.SSL_CERT_PATH),
     };
-    console.log('✅ SSL enabled');
+    server = createHttpsServer(options);
+    console.log('✅ SSL enabled, using HTTPS server');
 } else {
-    console.log('❌ SSL not enabled');
+    server = createHttpServer();
+    console.log('❌ SSL not enabled, using HTTP server');
 }
-const server = createServer(options);
 
+console.log(`Starting server with the following configuration:
+- Frontend URL (for CORS): ${process.env.FRONTEND_URL || 'not set'}
+- Backend Port: ${process.env.VITE_BACKEND_PORT || '3000'}
+- SSL Key Path: ${process.env.SSL_KEY_PATH || 'not set'}
+- SSL Cert Path: ${process.env.SSL_CERT_PATH || 'not set'}`);
 const io = new Server(server, {
     cors: {
-        origin: process.env.VITE_URL,
-    }
+        origin: process.env.FRONTEND_URL,
+    },
+    transports: ['polling', 'websocket'],
 });
 
 type Message = {

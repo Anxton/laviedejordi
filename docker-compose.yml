@@ -11,9 +11,10 @@ services:
       - "${SSL_ARCHIVE_DIR}:${SSL_ARCHIVE_DIR}:ro"
     environment:
       - IN_DOCKER=true
-      - VITE_URL=${VITE_URL}
+      - VITE_BACKEND_URL=${VITE_BACKEND_URL}
       - VITE_BACKEND_PORT=${VITE_BACKEND_PORT}
       - VITE_ANSWER=${VITE_ANSWER}
+      - FRONTEND_URL=${FRONTEND_URL}
       - SSL_CERT_PATH=${SSL_CERT_PATH}
       - SSL_KEY_PATH=${SSL_KEY_PATH}
     restart: unless-stopped

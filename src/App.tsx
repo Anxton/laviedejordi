@@ -22,8 +22,15 @@ export const App = () => {
   );
 };
 
-createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
+const isDev = import.meta.env.DEV;
+const root = createRoot(document.getElementById("root")!);
+
+root.render(
+  isDev ? (
     <App />
-  </React.StrictMode>
+  ) : (
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  )
 );
