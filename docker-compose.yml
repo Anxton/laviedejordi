@@ -13,6 +13,7 @@ services:
       - IN_DOCKER=true
       - VITE_URL=${VITE_URL}
       - VITE_BACKEND_PORT=${VITE_BACKEND_PORT}
+      - VITE_ANSWER=${VITE_ANSWER}
       - SSL_CERT_PATH=${SSL_CERT_PATH}
       - SSL_KEY_PATH=${SSL_KEY_PATH}
     restart: unless-stopped

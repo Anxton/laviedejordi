@@ -4,6 +4,13 @@ This repository contains the frontend and backend server for **La Vie de Jordi**
 
 ---
 
+## 📋 Requirements
+
+- Docker
+- Docker Compose
+- Node.js
+- Luck? I don't know why the backend does not work locally and also why the frontend cannot be built and opened locally.
+
 ## 🚀 Quick Start
 
 ### 1. Clone the Repository
